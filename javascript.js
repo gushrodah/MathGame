@@ -2,12 +2,15 @@ var timer = 0;
 var score = 0;
 var maxTimer = 10;
 var hasStarted = false;
+var correctAnswer = 0;
 
 //onClick
 document.getElementById("startButton").onclick =
 function startCountdown(){
     Reset();
     hasStarted = true;
+    DisplayElement("startButton", false);
+    DisplayElement("endGameMsg", false);
     if (hasStarted) {
         // decrement timer
         action = setInterval(function () {
@@ -17,12 +20,32 @@ function startCountdown(){
             if (timer <= 0) {
                 document.getElementById("endGameMsg").style.display = "block";
                 DisplayElement("endGameMsg", true);
-                Reset();
+                SetElement("finalScore", score);
+                //Reset();
                 hasStart= false;
                 clearInterval(action);
+                DisplayElement("startButton", true);
             }
         }, 1000);
     }
+}
+
+for (i = 1; i < 5; i++) {
+    document.getElementById("Option"+i).onclick =
+        function () {
+            if (hasStarted) {
+                if (this.innerHTML == correctAnswer) {
+                    score += 100;
+                    DisplayElement("correct", true);
+                    GenerateQuestion();
+                }
+                else {
+                    score -= 50;
+                    DisplayElement("wrong", true);
+                }
+                SetElement("scoreValue", score);
+            }
+        }
 }
 
 function GenerateQuestion(){
@@ -30,10 +53,11 @@ function GenerateQuestion(){
     var num1 = GetRandomInt(1,10);
     var num2 = GetRandomInt(1,10);
     // set display
-    SetElement("question", num1 + " X " + num2);
+    SetElement("question", num1 + " x " + num2);
     var answers = [];
     // set answers
     answers.push(num1* num2);
+    correctAnswer = num1 * num2;
     answers.push(num1* num2 + 1);
     answers.push(num1+ num2);
     answers.push(num1- num2);
@@ -71,6 +95,10 @@ function Reset(){
     timer = maxTimer;
     score = 0;
     SetElement("timeLeft", timer);
+    SetElement("finalScore", score);
+    SetElement("scoreValue", score);
+    DisplayElement("correct", false);
+    DisplayElement("wrong", false);
     GenerateQuestion();
 }
 
